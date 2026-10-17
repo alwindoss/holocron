@@ -10,8 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tiptap/extension-placeholder": "^3.32.0",
+    "@tiptap/starter-kit": "^3.32.0",
+    "@tiptap/vue-3": "^3.32.0",
     "@wailsio/runtime": "latest",
-    "vue": "^3.2.45"
+    "pinia": "^4.1.0",
+    "tiptap-markdown": "^0.9.0",
+    "vue": "^3.2.45",
+    "vue-router": "^5.4.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.0",

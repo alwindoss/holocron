@@ -1,4 +1,4 @@
-module changeme
+module go.dalw.in/holocron
 
 go 1.25.0
 

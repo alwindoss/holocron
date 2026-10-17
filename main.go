@@ -2,11 +2,13 @@ package main
 
 import (
 	"embed"
+	"os"
+	"path/filepath"
 
 	"log"
-	"time"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
+	"go.dalw.in/holocron/internal/notes"
 )
 
 // Wails uses Go's `embed` package to embed the frontend files into the binary.
@@ -24,10 +26,25 @@ func init() {
 	application.RegisterEvent[string]("time")
 }
 
+// dataDir falls back so it also works where UserConfigDir is unavailable (mobile sandboxes).
+func dataDir() string {
+	for _, f := range []func() (string, error){os.UserConfigDir, os.UserHomeDir} {
+		if d, err := f(); err == nil && d != "" {
+			return filepath.Join(d, "holocron")
+		}
+	}
+	return filepath.Join(os.TempDir(), "holocron")
+}
+
 // main function serves as the application's entry point. It initializes the application, creates a window,
 // and starts a goroutine that emits a time-based event every second. It subsequently runs the application and
 // logs any error that might occur.
 func main() {
+
+	svc, err := notes.New(dataDir())
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// Create a new Wails application by providing the necessary options.
 	// Variables 'Name' and 'Description' are for application metadata.
@@ -35,10 +52,10 @@ func main() {
 	// 'Bind' is a list of Go struct instances. The frontend has access to the methods of these instances.
 	// 'Mac' options tailor the application when running an macOS.
 	app := application.New(application.Options{
-		Name:        "holocron",
-		Description: "A demo of using raw HTML & CSS",
+		Name:        "Holocron",
+		Description: "Markdown notes that sync",
 		Services: []application.Service{
-			application.NewService(&GreetService{}),
+			application.NewService(svc),
 		},
 		Assets: application.AssetOptions{
 			Handler: application.AssetFileServerFS(assets),
@@ -48,40 +65,10 @@ func main() {
 		},
 	})
 
-	// Create a new window with the necessary options.
-	// 'Title' is the title of the window.
-	// 'Mac' options tailor the window when running on macOS.
-	// 'BackgroundColour' is the background colour of the window.
-	// 'URL' is the URL that will be loaded into the webview.
 	app.Window.NewWithOptions(application.WebviewWindowOptions{
-		Title: "Window 1",
-		// Window sized to the golden ratio (1000 / 618 ≈ 1.618).
-		Width:  1000,
-		Height: 618,
-		Mac: application.MacWindow{
-			InvisibleTitleBarHeight: 50,
-			Backdrop:                application.MacBackdropTranslucent,
-			TitleBar:                application.MacTitleBarHiddenInset,
-		},
-		BackgroundColour: application.NewRGB(6, 7, 15),
-		URL:              "/",
+		Title: "Holocron", Width: 1100, Height: 720, MinWidth: 360, MinHeight: 480, URL: "/",
 	})
-
-	// Create a goroutine that emits an event containing the current time every second.
-	// The frontend can listen to this event and update the UI accordingly.
-	go func() {
-		for {
-			now := time.Now().Format(time.RFC1123)
-			app.Event.Emit("time", now)
-			time.Sleep(time.Second)
-		}
-	}()
-
-	// Run the application. This blocks until the application has been exited.
-	err := app.Run()
-
-	// If an error occurred while running the application, log it and exit.
-	if err != nil {
+	if err := app.Run(); err != nil {
 		log.Fatal(err)
 	}
 }
