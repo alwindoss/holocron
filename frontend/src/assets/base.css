@@ -368,6 +368,10 @@ input {
   padding-top: env(safe-area-inset-top);
 }
 
+.settings .back {
+  display: inline-flex;
+}
+
 .form {
   padding: 16px;
   display: grid;

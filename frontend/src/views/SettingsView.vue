@@ -33,7 +33,7 @@ async function save() {
 <template>
   <div class="settings">
     <header class="bar">
-      <RouterLink to="/" class="btn back">‹</RouterLink>
+      <RouterLink to="/" class="btn back" title="Back to notes" aria-label="Back to notes">‹ Back</RouterLink>
       <h2 class="grow">Sync settings</h2>
     </header>
     <div class="form">
