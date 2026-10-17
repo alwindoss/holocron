@@ -1,0 +1,15 @@
+{
+	"fixed": {
+		"file_version": "0.1.0"
+	},
+	"info": {
+		"0409": {
+			"ProductVersion": "0.1.0",
+			"CompanyName": "8ideaz",
+			"FileDescription": "A holocron application",
+			"LegalCopyright": "© 2026, 8ideaz",
+			"ProductName": "My Product",
+			"Comments": "This is a comment"
+		}
+	}
+}
